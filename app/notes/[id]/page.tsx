@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { fetchNoteById } from "../../../lib/api";
 import { Note } from "../../../types/note";
-import css from "./NoteDetailsPage.module.css";
+import css from "./NoteDetails.module.css";
 
 interface PageProps {
   params: Promise<{ id: string }>;
