@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+// Link removed: not used in this file
 
 export default function HomePage() {
   return (
@@ -48,25 +48,6 @@ export default function HomePage() {
           NoteHub offers a streamlined experience for anyone who values clarity
           and productivity.
         </p>
-
-        {/* Кнопка для переходу до нотаток */}
-        <div style={{ textAlign: "center" }}>
-          <Link
-            href="/notes"
-            style={{
-              display: "inline-block",
-              backgroundColor: "#4f46e5",
-              color: "#ffffff",
-              padding: "0.75rem 2rem",
-              borderRadius: "8px",
-              fontWeight: "600",
-              textDecoration: "none",
-              transition: "background-color 0.2s",
-            }}
-          >
-            Go to My Notes →
-          </Link>
-        </div>
       </div>
     </main>
   );
