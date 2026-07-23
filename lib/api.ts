@@ -16,17 +16,14 @@ export interface FetchNotesParams {
   search?: string;
   page?: number;
   limit?: number;
-  tag?: string;
+  tag?: string | string[];
 }
 
 export interface FetchNotesResponse {
   notes: Note[];
-  totalCount: number;
-  currentPage: number;
   totalPages: number;
 }
 
-// Інтерфейс для створення нотатки повністю відповідає бекенду
 export interface CreateNoteDto {
   title: string;
   content: string;
@@ -34,7 +31,7 @@ export interface CreateNoteDto {
 }
 
 /**
- * Отримання нотаток — прибираємо page/limit та обробляємо "all"
+ * Отримання нотаток — ВИПРАВЛЕНО (Тип відповіді суворо відповідає бекенду)
  */
 export const fetchNotes = async (
   params?: FetchNotesParams,
@@ -47,7 +44,13 @@ export const fetchNotes = async (
       if (key === "tag" && (value === "all" || value === "All")) return;
 
       if (value !== "" && value !== undefined && value !== null) {
-        cleanedParams[key] = String(value);
+        if (key === "tag" && Array.isArray(value)) {
+          if (value.length > 0) {
+            cleanedParams[key] = value.join(",");
+          }
+        } else {
+          cleanedParams[key] = String(value);
+        }
       }
     });
   }
@@ -67,7 +70,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 };
 
 /**
- * Створення нотатки — тепер відправляємо чисті поля title, content, tag
+ * Створення нотатки
  */
 export const createNoteApi = async (noteData: CreateNoteDto): Promise<Note> => {
   const response = await api.post<Note>("/notes", noteData);
