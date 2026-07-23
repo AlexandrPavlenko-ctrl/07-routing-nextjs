@@ -5,16 +5,14 @@ import { createPortal } from "react-dom";
 import css from "./Modal.module.css";
 
 interface ModalProps {
-  isOpen: boolean;
+  // isOpen?: boolean; // <- Додайте знак "?" або повністю видаліть цей рядок, якщо він не потрібен
   onClose: () => void;
   children: React.ReactNode;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+export const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
   useEffect(() => {
-    if (!isOpen) return;
-
-    // Блокируем скролл на body при открытии модалки
+    // Блокуємо скролл на body при відкритті модалки
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
 
@@ -28,12 +26,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = originalStyle;
     };
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
-  if (!isOpen) return null;
+  if (typeof window === "undefined") return null;
 
-  // Так как компонент будет импортирован с ssr: false,
-  // мы гарантированно находимся в браузере, и объект document всегда доступен
   const modalRoot = document.getElementById("modal-root") || document.body;
 
   return createPortal(

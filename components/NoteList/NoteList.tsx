@@ -23,12 +23,8 @@ export const NoteList: React.FC<NoteListProps> = ({ notes }) => {
     <ul className={css.list}>
       {notes.map((note) => {
         // Чиста і безпечна типізація альтернативних полів без any
-        const noteTitle = note.title || note.name || "Untitled";
-        const noteContent =
-          note.content ||
-          note.text ||
-          note.description ||
-          "No content provided";
+        const noteTitle = note.title || "Untitled";
+        const noteContent = note.content;
 
         return (
           <li key={note.id} className={css.listItem}>

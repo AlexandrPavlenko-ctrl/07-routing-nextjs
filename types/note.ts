@@ -1,12 +1,8 @@
 export interface Note {
   id: string;
   title: string;
-  content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
-  createdAt?: string;
-
-  // Додаткові альтернативні поля бекенду для безпечного зчитування
-  name?: string;
-  text?: string;
-  description?: string;
+  content: string; // Строго content замість text
+  createdAt: string;
+  updatedAt: string;
+  tag: string; // Строго рядок замість масиву tags
 }

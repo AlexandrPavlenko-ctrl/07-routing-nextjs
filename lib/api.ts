@@ -1,51 +1,83 @@
 import axios from "axios";
 import { Note } from "../types/note";
 
-const BASE_URL = "https://notehub-public.goit.study/api";
+const API_URL = "https://notehub-public.goit.study/api";
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 
-// Обов'язково переконайтеся, що у файлі .env.local ваш токен вставлений без слів Bearer і без лапок
-const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || "";
-
-const api = axios.create({
-  baseURL: BASE_URL,
+export const api = axios.create({
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
-    // СУВОРИЙ СТАНДАРТ GOIT API: слово Bearer, ОДИН пробіл і сам токен
-    Authorization: `Bearer ${API_TOKEN}`,
+    ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),
   },
 });
 
-interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-  totalNotes?: number;
+export interface FetchNotesParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+  tag?: string;
 }
 
-export type CreateNoteInput = Omit<Note, "id">;
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+}
 
+// Інтерфейс для створення нотатки повністю відповідає бекенду
+export interface CreateNoteDto {
+  title: string;
+  content: string;
+  tag: string;
+}
+
+/**
+ * Отримання нотаток — прибираємо page/limit та обробляємо "all"
+ */
 export const fetchNotes = async (
-  page?: number,
-  search?: string,
-  tag?: string,
+  params?: FetchNotesParams,
 ): Promise<FetchNotesResponse> => {
-  const params: Record<string, string | number> = {};
-  if (page) params.page = page;
-  if (search && search.trim() !== "") params.search = search;
-  if (tag && tag !== "all") params.tag = tag;
+  const cleanedParams: Record<string, string> = {};
 
-  const response = await api.get<FetchNotesResponse>("notes", { params });
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (key === "page" || key === "limit") return;
+      if (key === "tag" && (value === "all" || value === "All")) return;
+
+      if (value !== "" && value !== undefined && value !== null) {
+        cleanedParams[key] = String(value);
+      }
+    });
+  }
+
+  const response = await api.get<FetchNotesResponse>("/notes", {
+    params: cleanedParams,
+  });
   return response.data;
 };
 
+/**
+ * Отримання деталей нотатки за її ID
+ */
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await api.get<Note>(`notes/${id}`);
+  const response = await api.get<Note>(`/notes/${id}`);
   return response.data;
 };
 
-export const createNoteApi = async (data: CreateNoteInput): Promise<void> => {
-  await api.post<void>("notes", data);
+/**
+ * Створення нотатки — тепер відправляємо чисті поля title, content, tag
+ */
+export const createNoteApi = async (noteData: CreateNoteDto): Promise<Note> => {
+  const response = await api.post<Note>("/notes", noteData);
+  return response.data;
 };
 
-export const deleteNoteApi = async (id: string): Promise<void> => {
-  await api.delete<void>(`notes/${id}`);
+/**
+ * Видалення нотатки
+ */
+export const deleteNoteApi = async (id: string): Promise<Note> => {
+  const response = await api.delete<Note>(`/notes/${id}`);
+  return response.data;
 };

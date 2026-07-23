@@ -22,7 +22,7 @@ export default async function FilteredNotesPage({ params }: PageProps) {
   // Виконуємо prefetch із точним рядковим ключем
   await queryClient.prefetchQuery({
     queryKey: ["notes", 1, "", currentTag],
-    queryFn: () => fetchNotes(1, "", currentTag),
+    queryFn: () => fetchNotes({ page: 1, search: "", tag: currentTag }),
   });
 
   return (
