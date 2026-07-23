@@ -1,5 +1,5 @@
 import React from "react";
-import Providers from "../components/TanStackProvaider/TanStackProvaider";
+import Providers from "../components/TanStackProvider/TanStackProvaider";
 import { Header } from "../components/Header/Header";
 import { Footer } from "../components/Footer/Footer";
 import "./global.css";
